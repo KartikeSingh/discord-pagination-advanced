@@ -1,5 +1,3 @@
-const Discord = require('discord.js')
-
 module.exports = (message, embeds, emojis, timeout) => {
     if (!message
         || !message.channel

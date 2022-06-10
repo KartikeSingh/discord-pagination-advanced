@@ -8,7 +8,6 @@ An package to easily create pagination not only for embeds but also for simple s
 
 # Why ?
 - fast and advanced.
-- Auto deletion . Ephermal message.
 - Easy and customizable.
 
 # How ?
