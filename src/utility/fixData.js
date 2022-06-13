@@ -6,4 +6,7 @@ module.exports = (data, embeds, index) => {
         data.embeds = [embeds[index]];
         data.content = "\u200b";
     }
+
+    return data;
+    
 }

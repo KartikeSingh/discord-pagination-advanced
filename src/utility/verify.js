@@ -1,4 +1,4 @@
-module.exports = (message, embeds, emojis, timeout) => {
+module.exports = (message, embeds, emojis, timeout, a, b, c, f) => {
     if (!message
         || !message.channel
         || !message.channel.send
@@ -24,6 +24,14 @@ module.exports = (message, embeds, emojis, timeout) => {
     if (emojis.length === 0) return { error: true, message: "Emojis do not have any valid emoji in it." };
 
     if (!timeout || typeof (timeout) !== "number" || timeout < 100) return { error: true, message: "Timeout should be a number and at least 100" };
+
+    if (typeof (a) !== "boolean") return { error: true, message: "messageDelete option should be either true or boolean but recived " + JSON.stringify(a) };
+
+    if (typeof (b) !== "boolean") return { error: true, message: "messageDelete option should be either true or boolean but recived " + JSON.stringify(b) };
+    
+    if (typeof (c) !== "boolean") return { error: true, message: "ephemeral option should be either true or boolean but recived " + JSON.stringify(c) };
+    
+    if (typeof (f) !== "function") return { error: true, message: "filter option should be function but recived " + JSON.stringify(c) };
 
     return { error: false };
 }
