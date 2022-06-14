@@ -58,6 +58,8 @@ module.exports = async function pagination(message, embeds, options = {}) {
         });
 
         collector.on('collect', async (i) => {
+            if (!i.isButton() || i.message.id !== msg?.id) return;
+
             if (i.customId[0] === "1") index--;
             else if (i.customId[0] === "2") index++;
             else {
