@@ -7,6 +7,8 @@ module.exports = (data, embeds, index) => {
         data.content = "\u200b";
     }
 
-    return data;
+    data.fetchReply = true;
     
+    return data;
+
 }

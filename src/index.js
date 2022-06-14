@@ -1,4 +1,4 @@
-const { CommandInteraction, Interaction, Message, MessageActionRow, MessageButton, MessageEmbed, MessageButtonStyle } = require("discord.js");
+const { CommandInteraction, Interaction, Message, MessageActionRow, MessageButton, MessageEmbed, MessageButtonStyle, InteractionCollector } = require("discord.js");
 const { fixData, verify } = require("./utility");
 
 const defaultEmojis = ["⬅", "➡", "❌"];
@@ -32,7 +32,7 @@ module.exports = async function pagination(message, embeds, options = {}) {
 
     if (verification.error) throw new Error(verification.message);
 
-    let index = 0, row = new MessageActionRow(), data = { components: [row], content: null, embeds: [] };;
+    let index = 0, row = new MessageActionRow(), data = { components: [row], content: null, embeds: [], fetchReply: true };;
 
     for (let i = 0; i < 3; i++)data.components[0].addComponents(
         new MessageButton({
@@ -50,7 +50,10 @@ module.exports = async function pagination(message, embeds, options = {}) {
 
         const msg = await message[message.replied || message.deferred ? editReply ? "editReply" : "followUp" : "reply"](data);
 
-        const collector = msg.createMessageComponentCollector({ time: timeout, message: msg, filter: filter || defaultFilter })
+        const collector = new InteractionCollector(message.client, {
+            filter: filter || defaultFilter,
+            channel: message.channel,
+        });
 
         collector.on('collect', async (i) => {
             if (i.customId[0] === "1") index--;
