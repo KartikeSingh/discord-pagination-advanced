@@ -53,6 +53,8 @@ module.exports = async function pagination(message, embeds, options = {}) {
         const collector = new InteractionCollector(message.client, {
             filter: filter || defaultFilter,
             channel: message.channel,
+            time: timeout,
+            componentType: "BUTTON",
         });
 
         collector.on('collect', async (i) => {
