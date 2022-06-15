@@ -44,7 +44,7 @@ module.exports = async function pagination(message, embeds, options = {}) {
     );
 
     try {
-        typeof (embeds[index]) === "string" ? data.content = embeds[index] : data.embeds = [embeds[index]];
+        typeof embeds[index] === "string" ? data.content = embeds[index] : data.embeds = [embeds[index]];
 
         if (ephemeral) data.ephemeral = true;
 
@@ -88,8 +88,7 @@ module.exports = async function pagination(message, embeds, options = {}) {
             });
         });
     } catch (e) {
-        console.log(e);
-        throw new Error("I was unable to send/edit embed either the client do not have permission to send message or Invalid embed was provided\nError:");
+        throw new Error(`I was unable to send/edit embed either the client do not have permission to send message or Invalid embed was provided\nError: \n${e}`);
     }
 }
 
