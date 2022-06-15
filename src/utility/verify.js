@@ -9,7 +9,7 @@ module.exports = (message, embeds, emojis, timeout, a, b, c, f) => {
 
     for (let i = 0; i < embeds.length; i++) {
         const v = embeds[i];
-        if (!v || (typeof v !== "string" && typeof (v) !== "object")) embeds = embeds.filter(_v => _v !== v);
+        if (!v || (typeof v !== "string" && typeof v !== "object")) embeds = embeds.filter(_v => _v !== v);
     }
 
     if (embeds.length === 0) throw new Error("Embeds do not have any valid embed in it.");
@@ -18,18 +18,18 @@ module.exports = (message, embeds, emojis, timeout, a, b, c, f) => {
 
     for (let i = 0; i < emojis.length; i++) {
         const _v = emojis[i];
-        if (typeof (_v) !== "string") emojis = emojis.filter(v => v !== _v)
+        if (typeof _v !== "string") emojis = emojis.filter(v => v !== _v)
     }
 
     if (emojis.length === 0) throw new Error("Emojis do not have any valid emoji in it.");
 
-    if (!timeout || typeof (timeout) !== "number" || timeout < 100) throw new Error("Timeout should be a number and at least 100");
+    if (!timeout || typeof timeout !== "number" || timeout < 100) throw new Error("Timeout should be a number and at least 100");
 
-    if (typeof (a) !== "boolean") throw new Error("messageDelete option should be either true or boolean but recived " + JSON.stringify(a));
+    if (typeof a !== "boolean") throw new Error("messageDelete option should be either true or boolean but recived " + JSON.stringify(a));
 
-    if (typeof (b) !== "boolean") throw new Error("messageDelete option should be either true or boolean but recived " + JSON.stringify(b));
+    if (typeof b !== "boolean") throw new Error("messageDelete option should be either true or boolean but recived " + JSON.stringify(b));
     
-    if (typeof (c) !== "boolean") throw new Error("ephemeral option should be either true or boolean but recived " + JSON.stringify(c));
+    if (typeof c !== "boolean") throw new Error("ephemeral option should be either true or boolean but recived " + JSON.stringify(c));
     
-    if (typeof (f) !== "function") throw new Error("filter option should be function but recived " + JSON.stringify(c));
+    if (typeof f !== "function") throw new Error("filter option should be function but recived " + JSON.stringify(c));
 }
