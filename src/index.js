@@ -1,19 +1,49 @@
 const { CommandInteraction, Interaction, Message, MessageActionRow, MessageButton, MessageEmbed, MessageButtonStyle, InteractionCollector } = require("discord.js");
 const { fixData, verify } = require("./utility");
 
-const defaultEmojis = ["⬅", "➡", "❌"];
-const defaultConfig = [
+const defaultConfig_1 = [
     {
         label: "",
-        style: "SECONDARY"
+        style: "SECONDARY",
+        emoji: "⏪"
     },
     {
         label: "",
-        style: "SECONDARY"
+        style: "SECONDARY",
+        emoji: "⬅"
     },
     {
         label: "",
-        style: "SECONDARY"
+        style: "SECONDARY",
+        emoji:"❌"
+    }
+];
+
+const defaultConfig_2 = [
+    {
+        label: "",
+        style: "SECONDARY",
+        emoji: "⏪"
+    },
+    {
+        label: "",
+        style: "SECONDARY",
+        emoji: "⬅"
+    },
+    {
+        label: "",
+        style: "SECONDARY",
+        emoji: "❌"
+    },
+    {
+        label: "",
+        style: "SECONDARY",
+        emoji: "➡"
+    },
+    {
+        label: "",
+        style: "SECONDARY",
+        emoji: "⏩"
     }
 ];
 
@@ -26,19 +56,19 @@ const defaultConfig = [
 module.exports = async function pagination(message, embeds, options = {}) {
     const defaultFilter = (i) => i.user.id === (message.author?.id || message.user?.id);
 
-    const { buttonConfig = defaultConfig, emojis = defaultEmojis, timeout = 60000, deleteMessage = false, editReply = false, ephemeral = false, filter = defaultFilter } = options;
+    const { buttonConfig = defaultConfig, timeout = 60000, deleteMessage = false, editReply = false, ephemeral = false, filter = defaultFilter, pageSkip = false } = options;
 
-    const verification = verify(message, embeds, emojis, timeout, deleteMessage, editReply, ephemeral, filter);
-
-    if (verification.error) throw new Error(verification.message);
+    verify(message, embeds, options);
 
     let index = 0, row = new MessageActionRow(), data = { components: [row], content: null, embeds: [], fetchReply: true };;
+
+    const defaultConfig = pageSkip ? defaultConfig_2 : defaultConfig_1;
 
     for (let i = 0; i < 3; i++)data.components[0].addComponents(
         new MessageButton({
             customId: `${i + 1}_embed_button`,
             style: buttonConfig[i]?.style || "SECONDARY",
-            emoji: emojis[i] || defaultEmojis[i],
+            emoji: buttonConfig[i]?.emoji || defaultConfig[i].emoji,
             label: buttonConfig[i]?.label || defaultConfig[i].label,
         })
     );
@@ -60,8 +90,12 @@ module.exports = async function pagination(message, embeds, options = {}) {
         collector.on('collect', async (i) => {
             if (!i.isButton() || i.message.id !== msg?.id) return;
 
-            if (i.customId[0] === "1") index--;
-            else if (i.customId[0] === "2") index++;
+            const id = i.customId[0];
+
+            if (id === "1") index = 0;
+            else if (id === "2") index--;
+            else if (id === "4") index++;
+            else if (id === "5") index = embeds.length - 1;
             else {
                 collector.stop("goodEnd");
                 return i.update(fixData(data, embeds, 0));
@@ -73,6 +107,8 @@ module.exports = async function pagination(message, embeds, options = {}) {
         });
 
         collector.on('end', async (s, r) => {
+            if (ephemeral) return;
+
             if (deleteMessage) return await msg.delete().catch(e => { console.log(e); });
 
             msg.edit({
@@ -95,9 +131,9 @@ module.exports = async function pagination(message, embeds, options = {}) {
 
 /**
  * @typedef Options The options to control the pagination
- * @property {Array<String>} emojis The emojis to use for the button
  * @property {Number} timeout The time for which pagination stays active
- * @property {Array<{label: String, style:MessageButtonStyle }>} buttonConfig
+ * @property {Array<{label: string, style:MessageButtonStyle, emoji: string }>} buttonConfig
+ * @property {Boolean} pageSkip Do you want page skip buttons
  * @property {Boolean} deleteMessage Do you want to delete the pagination message after it ends
  * @property {Boolean} editReply Do you want to edit the interaction message for the pagination
  * @property {Boolean} ephemeral Do you want to the reply to be ephemeral or not
