@@ -1,4 +1,4 @@
-module.exports = (message, embeds, { emojis, timeout, deleteMessage, editReply, ephemeral, filter, pageSkip }) => {
+module.exports = (message, embeds, { timeout, deleteMessage, editReply, ephemeral, filter, pageSkip }) => {
     if (!message
         || !message.channel
         || !message.channel.send
@@ -13,15 +13,6 @@ module.exports = (message, embeds, { emojis, timeout, deleteMessage, editReply, 
     }
 
     if (embeds.length === 0) throw new TypeError("Embeds do not have any valid embed in it.")
-
-    if (!emojis || !Array.isArray(emojis) || emojis.length < 2) throw new TypeError("Please either provide two emojis or don't proived anything at all")
-
-    for (let i = 0; i < emojis.length; i++) {
-        const _v = emojis[i];
-        if (typeof _v !== "string") emojis = emojis.filter(v => v !== _v)
-    }
-
-    if (emojis.length === 0) throw new TypeError("Emojis do not have any valid emoji in it.")
 
     if (!timeout || typeof timeout !== "number" || timeout < 100) throw new TypeError("Timeout should be a number and at least 100")
 

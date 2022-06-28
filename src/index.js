@@ -15,7 +15,7 @@ const defaultConfig_1 = [
     {
         label: "",
         style: "SECONDARY",
-        emoji:"❌"
+        emoji: "❌"
     }
 ];
 
@@ -56,13 +56,16 @@ const defaultConfig_2 = [
 module.exports = async function pagination(message, embeds, options = {}) {
     const defaultFilter = (i) => i.user.id === (message.author?.id || message.user?.id);
 
-    const { buttonConfig = defaultConfig, timeout = 60000, deleteMessage = false, editReply = false, ephemeral = false, filter = defaultFilter, pageSkip = false } = options;
+    const { pageSkip = false } = options;
 
-    verify(message, embeds, options);
+    const defaultConfig = pageSkip ? defaultConfig_2 : defaultConfig_1;
+
+    const { buttonConfig = defaultConfig, timeout = 60000, deleteMessage = false, editReply = false, ephemeral = false, filter = defaultFilter } = options;
+
+    verify(message, embeds, { buttonConfig , timeout , deleteMessage , editReply , ephemeral , filter  , pageSkip});
 
     let index = 0, row = new MessageActionRow(), data = { components: [row], content: null, embeds: [], fetchReply: true };;
 
-    const defaultConfig = pageSkip ? defaultConfig_2 : defaultConfig_1;
 
     for (let i = 0; i < 3; i++)data.components[0].addComponents(
         new MessageButton({
