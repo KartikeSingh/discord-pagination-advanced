@@ -5,12 +5,12 @@ const defaultConfig_1 = [
     {
         label: "",
         style: "SECONDARY",
-        emoji: "⏪"
+        emoji: "⬅️"
     },
     {
         label: "",
         style: "SECONDARY",
-        emoji: "⬅"
+        emoji: "➡️"
     },
     {
         label: "",
@@ -23,12 +23,12 @@ const defaultConfig_2 = [
     {
         label: "",
         style: "SECONDARY",
-        emoji: "⏪"
+        emoji: "⬅️"
     },
     {
         label: "",
         style: "SECONDARY",
-        emoji: "⬅"
+        emoji: "➡️"
     },
     {
         label: "",
@@ -38,12 +38,12 @@ const defaultConfig_2 = [
     {
         label: "",
         style: "SECONDARY",
-        emoji: "➡"
+        emoji: "⏮️"
     },
     {
         label: "",
         style: "SECONDARY",
-        emoji: "⏩"
+        emoji: "⏭️"
     }
 ];
 
@@ -67,7 +67,7 @@ module.exports = async function pagination(message, embeds, options = {}) {
     let index = 0, row = new MessageActionRow(), data = { components: [row], content: null, embeds: [], fetchReply: true };;
 
 
-    for (let i = 0; i < 3; i++)data.components[0].addComponents(
+    for (let i = 0; i < defaultConfig.length; i++)data.components[0].addComponents(
         new MessageButton({
             customId: `${i + 1}_embed_button`,
             style: buttonConfig[i]?.style || "SECONDARY",
@@ -95,9 +95,9 @@ module.exports = async function pagination(message, embeds, options = {}) {
 
             const id = i.customId[0];
 
-            if (id === "1") index = 0;
-            else if (id === "2") index--;
-            else if (id === "4") index++;
+            if (id === "1") index--;
+            else if (id === "2") index++;
+            else if (id === "4") index = 0;
             else if (id === "5") index = embeds.length - 1;
             else {
                 collector.stop("goodEnd");
