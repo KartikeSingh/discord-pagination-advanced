@@ -3,12 +3,13 @@
 npm i discord-pagination-advanced
 ```
 
-# What ?
+# What is it?
 An package to easily create pagination not only for embeds but also for simple string messages, with buttons.
 
-# Why ?
-- fast and advanced.
-- Easy and customizable.
+# Why use this?
+- Fast & Advanced
+- Easy & Customizable
+- Good for both beginners & pros
 
 # How ?
 ```js
@@ -27,12 +28,14 @@ page(message, pages);
 ```js
 /**
  * @typedef Options The options to control the pagination
- * @property {Array<String>} emojis The emojis to use for the button
  * @property {Number} timeout The time for which pagination stays active
- * @property {Array<{label: String, style:MessageButtonStyle }>} buttonConfig
+ * @property {Array<{label: string, style:MessageButtonStyle, emoji: string }>} buttonConfig
+ * @property {Boolean} pageSkip Do you want page skip buttons
  * @property {Boolean} deleteMessage Do you want to delete the pagination message after it ends
  * @property {Boolean} editReply Do you want to edit the interaction message for the pagination
  * @property {Boolean} ephemeral Do you want to the reply to be ephemeral or not
+ * @property {Boolean} logs Do you want the bot to log errors, default is true
+ * @property {Boolean} removeComponent Do you to remove component after the collector ends
  * @property {Function} filter The interaction listener filter
  */
 ```
@@ -76,7 +79,37 @@ const options =  {
     }]
 }
 
-page(message, pages, options)
+page(message, pages, options);
+
+// page skip option!
+const options =  {
+   emojis: ["⬅", "➡", "❌", "⏮️", "⏭️",], // Emojis of the buttons
+   buttonConfig: [ // Label & style (these are optional)
+    {
+        label: "Left",
+        style: "SECONDARY",
+    },
+    {
+        label: "Right",
+        style: "SECONDARY",
+    },
+    {
+        label: "Close",
+        style: "SECONDARY",
+    },
+    {
+        label: "Skip To First",
+        style: "SECONDARY",
+    },
+    {
+        label: "Skip To Last",
+        style: "SECONDARY",
+        emoji: "⏭️", // you can pass emoji here too
+    }],
+    pageSkip: true, // enables the 5 button mode
+}
+
+page(message, pages, options);
 ```
 
 ## Other Options

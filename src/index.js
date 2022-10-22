@@ -1,4 +1,4 @@
-const { CommandInteraction, Interaction, Message, MessageActionRow, MessageButton, MessageEmbed, MessageButtonStyle, InteractionCollector } = require("discord.js");
+const { CommandInteraction, Interaction, Message, MessageActionRow, MessageButton, MessageEmbed, MessageButtonStyle } = require("discord.js");
 const { fixData, verify } = require("./utility");
 
 const defaultConfig_1 = [
@@ -49,7 +49,7 @@ const defaultConfig_2 = [
 
 /**
  * Easily create pagination of embeds / text messages.
- * @param {Message | CommandInteraction | Interaction} message The message, note it should have channel and a User/Author object.
+ * @param { Interaction | Message } message The message/interaction
  * @param {Array<MessageEmbed | String>} embeds The array or embeds or string.
  * @param {Options} options The options of pagination.
  */
@@ -60,9 +60,9 @@ module.exports = async function pagination(message, embeds, options = {}) {
 
     const defaultConfig = pageSkip ? defaultConfig_2 : defaultConfig_1;
 
-    const { buttonConfig = defaultConfig, timeout = 60000, deleteMessage = false, editReply = false, ephemeral = false, filter = defaultFilter } = options;
+    const { buttonConfig = defaultConfig, timeout = 60000, deleteMessage = false, editReply = false, ephemeral = false, filter = defaultFilter, logs = true, removeComponent = false } = options;
 
-    verify(message, embeds, { buttonConfig , timeout , deleteMessage , editReply , ephemeral , filter  , pageSkip});
+    verify(message, embeds, { buttonConfig, timeout, deleteMessage, editReply, ephemeral, filter, pageSkip, logs, removeComponent });
 
     let index = 0, row = new MessageActionRow(), data = { components: [row], content: null, embeds: [], fetchReply: true };;
 
@@ -83,12 +83,10 @@ module.exports = async function pagination(message, embeds, options = {}) {
 
         const msg = await message[message.replied || message.deferred ? editReply ? "editReply" : "followUp" : "reply"](data);
 
-        const collector = new InteractionCollector(message.client, {
+        const collector = msg.createMessageComponentCollector({
             filter: filter || defaultFilter,
-            channel: message.channel,
             time: timeout,
-            componentType: "BUTTON",
-        });
+        })
 
         collector.on('collect', async (i) => {
             if (!i.isButton() || i.message.id !== msg?.id) return;
@@ -100,8 +98,9 @@ module.exports = async function pagination(message, embeds, options = {}) {
             else if (id === "4") index = 0;
             else if (id === "5") index = embeds.length - 1;
             else {
-                collector.stop("goodEnd");
-                return i.update(fixData(data, embeds, 0));
+                await i.update(fixData(data, embeds, 0));
+
+                return collector.stop("goodEnd");
             }
 
             index = index < 0 ? embeds.length - 1 : index >= embeds.length ? index = 0 : index;
@@ -110,12 +109,15 @@ module.exports = async function pagination(message, embeds, options = {}) {
         });
 
         collector.on('end', async (s, r) => {
-            if (ephemeral) return;
+            if (deleteMessage && !message.ephemeral) return await msg.delete().catch(e => {
+                if (logs) {
+                    console.log("Unable to delete the message!");
+                    console.log(e)
+                }
+            });
 
-            if (deleteMessage) return await msg.delete().catch(e => { console.log(e); });
-
-            msg.edit({
-                components: data.components.map(x => {
+            const msgData = {
+                components: removeComponent ? [] : data.components.map(x => {
                     x.components = x.components.map(v => {
                         v.disabled = true;
 
@@ -124,11 +126,24 @@ module.exports = async function pagination(message, embeds, options = {}) {
 
                     return x;
                 })
-            });
+            };
+
+
+            if (message.ephemeral) message.editReply(msgData).catch(e => {
+                if (logs) {
+                    console.log("Unable to edit the message!");
+                    console.log(e)
+                }
+            }); else msg.edit(msgData).catch(e => {
+                if (logs) {
+                    console.log("Unable to edit the message!");
+                    console.log(e)
+                }
+            })
         });
     } catch (e) {
-        console.log(e);
-        throw new Error("I was unable to send/edit embed either the client do not have permission to send message or Invalid embed was provided\nError:");
+        if (logs) console.log(e);
+        throw new Error("I was unable to send/edit embed either the client do not have permission to send message or Invalid embed was provided");
     }
 }
 
@@ -140,5 +155,7 @@ module.exports = async function pagination(message, embeds, options = {}) {
  * @property {Boolean} deleteMessage Do you want to delete the pagination message after it ends
  * @property {Boolean} editReply Do you want to edit the interaction message for the pagination
  * @property {Boolean} ephemeral Do you want to the reply to be ephemeral or not
+ * @property {Boolean} logs Do you want the bot to log errors, default is true
+ * @property {Boolean} removeComponent Do you to remove component after the collector ends
  * @property {Function} filter The interaction listener filter
  */
