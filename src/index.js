@@ -60,21 +60,23 @@ module.exports = async function pagination(message, embeds, options = {}) {
 
     const defaultConfig = pageSkip ? defaultConfig_2 : defaultConfig_1;
 
-    const { buttonConfig = defaultConfig, timeout = 60000, deleteMessage = false, editReply = false, ephemeral = false, filter = defaultFilter, logs = true, removeComponent = false } = options;
+    const { buttonConfig = defaultConfig, timeout = 60000, deleteMessage = false, editReply = false, ephemeral = false, filter = defaultFilter, logs = true, removeComponent = false, close = true } = options;
 
-    verify(message, embeds, { buttonConfig, timeout, deleteMessage, editReply, ephemeral, filter, pageSkip, logs, removeComponent });
+    verify(message, embeds, { buttonConfig, timeout, deleteMessage, editReply, ephemeral, filter, pageSkip, logs, removeComponent, close });
 
     let index = 0, row = new MessageActionRow(), data = { components: [row], content: null, embeds: [], fetchReply: true };;
 
 
-    for (let i = 0; i < defaultConfig.length; i++)data.components[0].addComponents(
-        new MessageButton({
-            customId: `${i + 1}_embed_button`,
-            style: buttonConfig[i]?.style || "SECONDARY",
-            emoji: buttonConfig[i]?.emoji || defaultConfig[i].emoji,
-            label: buttonConfig[i]?.label || defaultConfig[i].label,
-        })
-    );
+    for (let i = 0; i < defaultConfig.length; i++) {
+        if (i !== 2 || close) data.components[0].addComponents(
+            new MessageButton({
+                customId: `${i + 1}_embed_button`,
+                style: buttonConfig[i]?.style || "SECONDARY",
+                emoji: buttonConfig[i]?.emoji || defaultConfig[i].emoji,
+                label: buttonConfig[i]?.label || defaultConfig[i].label,
+            })
+        );
+    }
 
     try {
         typeof (embeds[index]) === "string" ? data.content = embeds[index] : data.embeds = [embeds[index]];
@@ -152,6 +154,7 @@ module.exports = async function pagination(message, embeds, options = {}) {
  * @property {Number} timeout The time for which pagination stays active
  * @property {Array<{label: string, style:MessageButtonStyle, emoji: string }>} buttonConfig
  * @property {Boolean} pageSkip Do you want page skip buttons
+ * @property {Boolean} close Do you want the close buttons
  * @property {Boolean} deleteMessage Do you want to delete the pagination message after it ends
  * @property {Boolean} editReply Do you want to edit the interaction message for the pagination
  * @property {Boolean} ephemeral Do you want to the reply to be ephemeral or not
